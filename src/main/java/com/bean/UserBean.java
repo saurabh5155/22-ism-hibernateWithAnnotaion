@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -25,7 +27,16 @@ public class UserBean {
 	
 	private String password;
 	
+	@ManyToOne
+	@JoinColumn(name = "roleId",nullable = false)
+	private RoleBean role;
 	
+	public RoleBean getRole() {
+		return role;
+	}
+	public void setRole(RoleBean role) {
+		this.role = role;
+	}
 	public Integer getUserId() {
 		return userId;
 	}
