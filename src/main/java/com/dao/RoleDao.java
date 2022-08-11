@@ -10,4 +10,5 @@ import com.bean.RoleBean;
 @Repository
 public interface RoleDao extends CrudRepository<RoleBean, Integer>{
 	List<RoleBean> findAll();
+	
 }
