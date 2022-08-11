@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bean.RoleBean;
@@ -44,5 +45,11 @@ public class RoleController {
 	public ResponseEntity<?> deleteRoleById(@PathVariable("roleId") int roleId){
 		roleDao.deleteById(roleId);
 		return ResponseEntity.ok(HttpStatus.ACCEPTED);
+	}
+	
+	@PutMapping("/role")
+	public ResponseEntity<?> updateRole(RoleBean role){
+		roleDao.save(role);
+		return ResponseEntity.ok().body(role);
 	}
 }
