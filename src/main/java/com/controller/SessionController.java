@@ -26,15 +26,21 @@ public class SessionController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(UserBean user) {
-		RoleBean role = roleDao.findByRoleName("user");
-		user.setRole(role);
-		userDao.save(user);
-		return ResponseEntity.ok().body(user);
+		UserBean userBean = userDao.findByEmail(user.getEmail());
+		if(userBean==null) {
+			RoleBean role = roleDao.findByRoleName("user");
+			user.setRole(role);
+			userDao.save(user);
+			return ResponseEntity.ok().body(user);			
+		}else {
+			return ResponseEntity.ok().body("Email Already Given");
+		}
+		
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(LoginBean login) {
-		UserBean loginUser = userDao.login(login.getEmail(), login.getPassword());
+		UserBean loginUser = userDao.findByEmailAndPassword(login.getEmail(), login.getPassword());
 		if(loginUser==null) {
 			return ResponseEntity.ok().body("Invalid Email or Password....m");
 		}else {
