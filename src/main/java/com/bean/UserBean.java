@@ -1,11 +1,14 @@
 package com.bean;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -30,6 +33,10 @@ public class UserBean {
 	@ManyToOne
 	@JoinColumn(name = "roleId",nullable = false)
 	private RoleBean role;
+	
+	@OneToMany(mappedBy = "user")
+	private Set<AccountBean> account;
+	
 	
 	public RoleBean getRole() {
 		return role;
@@ -72,6 +79,12 @@ public class UserBean {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public Set<AccountBean> getAccount() {
+		return account;
+	}
+	public void setAccount(Set<AccountBean> account) {
+		this.account = account;
 	}
 	
 }
