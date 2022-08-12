@@ -67,5 +67,4 @@ public class AccountBean {
 		this.user = user;
 	}
 	
-	
 }
