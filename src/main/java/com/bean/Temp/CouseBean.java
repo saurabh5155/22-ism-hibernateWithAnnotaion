@@ -20,7 +20,7 @@ public class CouseBean {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID couseId;
 	
-	private String couseName;
+	private String courseName;
 
 	@ManyToMany(targetEntity = CouseBean.class)
 	@JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "studentId"), inverseJoinColumns = @JoinColumn(name = "courseId"))
@@ -34,12 +34,20 @@ public class CouseBean {
 		this.couseId = couseId;
 	}
 
-	public String getCouseName() {
-		return couseName;
+	public String getCourseName() {
+		return courseName;
 	}
 
-	public void setCouseName(String couseName) {
-		this.couseName = couseName;
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public Set<StudentBean> getStudent() {
+		return student;
+	}
+
+	public void setStudent(Set<StudentBean> student) {
+		this.student = student;
 	}
 	
 	

@@ -24,6 +24,12 @@ public class StudentBean {
 	@ManyToMany(mappedBy = "student")
 	private Set<CouseBean> course;
 	
+	public Set<CouseBean> getCourse() {
+		return course;
+	}
+	public void setCourse(Set<CouseBean> course) {
+		this.course = course;
+	}
 	public UUID getStudentId() {
 		return studentId;
 	}

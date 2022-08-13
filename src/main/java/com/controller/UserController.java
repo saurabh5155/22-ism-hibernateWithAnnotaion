@@ -26,13 +26,13 @@ public class UserController {
 	@Autowired
 	RoleDao roleDao;
 	
-	@PostMapping("/users")
-	public ResponseEntity<?> addUser(UserBean user){
-		RoleBean role = roleDao.findByRoleName("user");
-		user.setRole(role);
-		userDao.save(user);
-		return ResponseEntity.ok().body(user);
-	}
+//	@PostMapping("/users")
+//	public ResponseEntity<?> addUser(UserBean user){
+//		RoleBean role = roleDao.findByRoleName("user");
+//		user.setRole(role);
+//		userDao.save(user);
+//		return ResponseEntity.ok().body(user);
+//	}
 	
 	@GetMapping("/users")
 	public ResponseEntity<?> listUsers(){

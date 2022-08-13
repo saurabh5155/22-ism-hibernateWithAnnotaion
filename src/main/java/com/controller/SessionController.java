@@ -1,15 +1,14 @@
 package com.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bean.LoginBean;
+import com.bean.ResponseBean;
 import com.bean.RoleBean;
 import com.bean.UserBean;
 import com.dao.RoleDao;
@@ -28,8 +27,11 @@ public class SessionController {
 	public ResponseEntity<?> signup(UserBean user) {
 		UserBean userBean = userDao.findByEmail(user.getEmail());
 		if(userBean==null) {
+			BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
+			String encPassword = bCrypt.encode(user.getPassword());
 			RoleBean role = roleDao.findByRoleName("user");
 			user.setRole(role);
+			user.setPassword(bCrypt.encode(encPassword));       
 			userDao.save(user);
 			return ResponseEntity.ok().body(user);			
 		}else {
@@ -40,11 +42,38 @@ public class SessionController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(LoginBean login) {
-		UserBean loginUser = userDao.findByEmailAndPassword(login.getEmail(), login.getPassword());
-		if(loginUser==null) {
-			return ResponseEntity.ok().body("Invalid Email or Password....m");
+//		UserBean loginUser = userDao.findByEmailAndPassword(login.getEmail(), login.getPassword());
+//		if(loginUser==null) {
+//			return ResponseEntity.ok().body("Invalid Email or Password....");
+//		}else {
+//			return ResponseEntity.ok().body(loginUser); 
+//		}
+		
+		BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
+		
+		
+		UserBean userBean = userDao.findByEmail(login.getEmail());
+		
+		System.out.println(bCrypt.matches(login.getPassword(), userBean.getPassword()));
+		
+		if(userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
+			return ResponseEntity.ok().body(login);
 		}else {
-			return ResponseEntity.ok().body(loginUser); 
+			ResponseBean<UserBean> res = new ResponseBean<>();
+			res.setData(userBean);
+			res.setMsg("Invalid Email or Password....");
+			return ResponseEntity.ok().body(res);
 		}
+		
+		
+		
+//		if(userBean == null || bCrypt.matches(login.getPassword(), userBean.getPassword()) == false) {
+//			ResponseBean<UserBean> res = new ResponseBean<>();
+//			res.setData(userBean);
+//			res.setMsg("Invalid Email or Password....");
+//			return ResponseEntity.ok().body(res);
+//		}else {
+//			return ResponseEntity.ok().body(login);
+//		}
 	}
 }
