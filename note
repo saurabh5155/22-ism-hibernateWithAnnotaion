@@ -1,0 +1,249 @@
+heroku deployment :- 
+
+signup
+login
+create project in heroku 
+install heroku cli 
+type heroku in cmd
+
+now execute command 
+	heroku login 
+
+ 	heroku git add 
+	git push heroku master 
+	heroku open 
+
+it will open your remote url 
+https://exp-tracker-22.herokuapp.com/
+
+now you can acess your url with remote url 
+https://exp-tracker-22.herokuapp.com/signup 
+
+if you net get your url and got error , then run 
+	heroku logs --tail 
+
+above command will help you to identify the errors 
+if we got H14 - no web process running
+
+then we need to add 1 file 
+	filename => Procfile  [ note : we dont have any extension in this file name ]
+create Procfile in root directory of yr project and copy paste below line. 
+
+web: java -Dserver.port=$PORT -jar target/*.war
+
+now 
+	git add Procfile
+	git commit -m "proc" Procfile 
+	git push heroku master 
+
+	now check your project is running.....
+
+
+now open heroku resources tab click on pg database -> it wil open new page -> 
+where you get all the db credentials. 
+modify in application.properties with live db credentials. 
+
+now again git commit and heroku push so it re-deplo app with latest changes. 
+
+
+now lets learn how to create table in live db ? 
+pgadmin -> heroku db --> connect 
+
+
+--------------------------------------------
+sts -> 
+web*
+
+devtools
+pg driver 
+spring data jpa  [ jdbc ] 
+
+
+1) crud 
+2) mapping
+3) mapping using inheritance 
+
+--------------------------------------------
+mapping 
+relation
+
+-----------------
+1) 
+
+1st time 
+git init 
+git add remote origin 
+add
+commit
+push
+
+ABC: pull 
+
+
+DEF : changes 
+add,commit,push 
+
+
+2)
+1st time 
+git clone https://github.com/tejasshah2k19/ism-web-2022.git
+sts -> file -> import ->existing maven project -> browse -> 
+do right click on project -> maven update project with force option 
+
+ABC : changes 
+add - commit - push 
+
+
+DEF : pull 
+ 
+
+
+
+
+User
+
+@ManyToOne
+@JoinColumn(name="roleId")
+RoleBean role; 
+
+Role 
+	@OneToMany(mappedBy="role") 
+	Set<UserBean> users;
+	
+	
+	
+User 
+	@OneToMany(mappedBy="user") 
+	Set<AccountBean> accounts; 
+	
+Account 
+	
+	@ManyToOne
+	@JoinColumn(name="userId")
+	UserBean user; 
+
+---------------------------------------------------------------------------------
+
+
+String 			varchar / varchar2
+int				integer , big int , 
+
+dialect 
+
+
+1) core interfaces ? 
+
+	Configuration
+	SessionFactory
+	Session
+	Transaction 
+	Query
+	Criteria 
+	
+
+* save() vs persist() 
+
+save -> this method will return an id 
+persist -> this method will not return 
+
+save -> public Serializable save(Object o) 
+persist -> public void persist(Object o) 
+	
+	
+	
+*get()  and load() 
+    		get									load
+	if id is not present				if id is not present 
+	it return null						it throws an Exception [ ObjectNotFoundException] 
+	
+	not sure -> present?				sure -> present 
+	 
+	database							proxy object 
+
+
+hibernate object --> states --> 
+
+transient 
+persistent 
+detached 
+removed 
+
+
+	first level 					second level 
+	
+	Session							SessionFactory
+	its default						not enabled 
+	
+	
+	
+	
+	EH Cache -> read only, nonstrict r and w ,read-write,
+	OS Cache -> same as eh 
+	Swarm Cache ->  1,2
+	JBoss Cache -> 0,0,0,transcational support  
+	
+   <property name="hibernate.cache.use_second_level_cache" value="true"/>
+	<property name="hibernate.cache.region.factory_class" 
+      value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>   
+
+-----------------------------------------------------------------------------------------
+	BFilter 
+	TFilter 
+	AFilter 
+	
+	*generator in hibernate 
+	increment -> [ int , shot , long ] 
+	
+	sequence -> oracle ,pg 
+				create sequence user_seq start with 10 increment by 10; 
+	identity -> MySql , MssQl 
+			 		1,2,3,4,5 
+	
+	native -> identity , sequence , ...... 
+	
+	uuid   -> ip based --> hexadecimal string -> 32   
+	
+	guid --> 
+	
+	select --> 
+	
+	foreign --> 
+	
+		ont to one 
+		
+		user and userprofile 
+		
+		
+		user 
+		userid:pk
+		1
+		2
+		
+		   userprofile
+		    userid:pk[fk]  adhar profile 
+		 		1
+		 		2
+		
+----------------------------------------------------------------------------------------
+
+user --> api --> access | login 
+
+	secured 
+		/user
+		/admin
+	public 
+		/public 
+		
+		
+incoming request --> check --> secured? 
+									user authenticated and authorized 
+									check for the authtoken  
+									
+									data 
+									header 
+		
+
+
+
+
+
