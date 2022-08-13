@@ -4,6 +4,7 @@ package com.controller.public_access;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import com.bean.RoleBean;
 import com.bean.UserBean;
 import com.dao.RoleDao;
 import com.dao.UserDao;
+import com.service.TokenGenerateService;
 
 @RestController
 @RequestMapping("/public")
@@ -24,6 +26,9 @@ public class SessionController {
 
 	@Autowired
 	RoleDao roleDao;
+	
+	@Autowired
+	TokenGenerateService tokenGenerateService;
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(UserBean user) {
@@ -58,8 +63,12 @@ public class SessionController {
 		
 		System.out.println(bCrypt.matches(login.getPassword(), userBean.getPassword()));
 		
+
+
+		
 		if(userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
-			return ResponseEntity.ok().body(login);
+			userBean.setAuthenticationToken(tokenGenerateService.generateTokan(16));
+			return ResponseEntity.ok().body(userBean);
 		}else {
 			ResponseBean<UserBean> res = new ResponseBean<>();
 			res.setData(userBean);

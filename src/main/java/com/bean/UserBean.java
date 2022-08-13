@@ -37,6 +37,7 @@ public class UserBean {
 	@OneToMany(mappedBy = "user")
 	private Set<AccountBean> account;
 	
+	private String authenticationToken;
 	
 	public RoleBean getRole() {
 		return role;
@@ -85,6 +86,12 @@ public class UserBean {
 	}
 	public void setAccount(Set<AccountBean> account) {
 		this.account = account;
+	}
+	public String getAuthenticationToken() {
+		return authenticationToken;
+	}
+	public void setAuthenticationToken(String authenticationToken) {
+		this.authenticationToken = authenticationToken;
 	}
 	
 }
