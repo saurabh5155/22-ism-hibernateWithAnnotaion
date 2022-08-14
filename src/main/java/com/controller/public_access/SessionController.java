@@ -1,6 +1,8 @@
 package com.controller.public_access;
 
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,7 +40,7 @@ public class SessionController {
 			String encPassword = bCrypt.encode(user.getPassword());
 			RoleBean role = roleDao.findByRoleName("user");
 			user.setRole(role);
-			user.setPassword(bCrypt.encode(encPassword));       
+			user.setPassword(encPassword);       
 			userDao.save(user);
 			return ResponseEntity.ok().body(user);			
 		}else {
@@ -49,25 +51,24 @@ public class SessionController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(LoginBean login) {
-//		UserBean loginUser = userDao.findByEmailAndPassword(login.getEmail(), login.getPassword());
-//		if(loginUser==null) {
+//		UserBean userBean = userDao.findByEmailAndPassword(login.getEmail(), login.getPassword());
+//		if(userBean==null && userBean.getPassword().equals(login.getPassword())) {
 //			return ResponseEntity.ok().body("Invalid Email or Password....");
 //		}else {
-//			return ResponseEntity.ok().body(loginUser); 
+//			String authToken = tokenGenerateService.generateTokan(16);
+//			userBean.setAuthenticationToken(authToken);
+//			userDao.save(userBean);
+//			response.setHeader("authToken", authToken);
+//			return ResponseEntity.ok().body(userBean); 
 //		}
 		
 		BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
-		
-		
 		UserBean userBean = userDao.findByEmail(login.getEmail());
-		
-		System.out.println(bCrypt.matches(login.getPassword(), userBean.getPassword()));
-		
-
-
-		
+				
 		if(userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
-			userBean.setAuthenticationToken(tokenGenerateService.generateTokan(16));
+			String authToken = tokenGenerateService.generateTokan(16);
+			userBean.setAuthenticationToken(authToken);
+			userDao.save(userBean);
 			return ResponseEntity.ok().body(userBean);
 		}else {
 			ResponseBean<UserBean> res = new ResponseBean<>();
@@ -75,16 +76,14 @@ public class SessionController {
 			res.setMsg("Invalid Email or Password....");
 			return ResponseEntity.ok().body(res);
 		}
-		
-		
-		
-//		if(userBean == null || bCrypt.matches(login.getPassword(), userBean.getPassword()) == false) {
-//			ResponseBean<UserBean> res = new ResponseBean<>();
-//			res.setData(userBean);
-//			res.setMsg("Invalid Email or Password....");
-//			return ResponseEntity.ok().body(res);
-//		}else {
-//			return ResponseEntity.ok().body(login);
-//		}
+	}
+	
+	@GetMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletRequest req){
+		String authToken = req.getHeader("authToken");
+		UserBean userBean = userDao.findByAuthenticationToken(authToken);
+		userBean.setAuthenticationToken("");
+		userDao.save(userBean);
+		return ResponseEntity.ok().body("Logout Successfully....");
 	}
 }

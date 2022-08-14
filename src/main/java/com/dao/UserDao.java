@@ -18,4 +18,6 @@ public interface UserDao extends CrudRepository<UserBean,Integer >{
 	UserBean findByEmailAndPassword(String email,String password);
 	
 	UserBean  findByEmail(String email);
+	
+	UserBean findByAuthenticationToken(String authenticationToken);
 }
