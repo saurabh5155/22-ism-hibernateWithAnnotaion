@@ -41,11 +41,13 @@ public class SessionController {
 	@Autowired
 	AccountDao accountDao;
 
+	@Autowired
+	BCryptPasswordEncoder bCrypt;
+	
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(UserBean user) {
 		UserBean userBean = userDao.findByEmail(user.getEmail());
 		if(userBean==null) {
-			BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
 			String encPassword = bCrypt.encode(user.getPassword());
 			RoleBean role = roleDao.findByRoleName("user");
 			user.setRole(role);
@@ -71,7 +73,6 @@ public class SessionController {
 //			return ResponseEntity.ok().body(userBean); 
 //		}
 		
-		BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
 		UserBean userBean = userDao.findByEmail(login.getEmail());
 				
 		if(userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
