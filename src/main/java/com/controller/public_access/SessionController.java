@@ -1,6 +1,10 @@
 package com.controller.public_access;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bean.AccountBean;
 import com.bean.LoginBean;
 import com.bean.ResponseBean;
 import com.bean.RoleBean;
 import com.bean.UserBean;
+import com.dao.AccountDao;
 import com.dao.RoleDao;
 import com.dao.UserDao;
 import com.service.TokenGenerateService;
@@ -31,6 +37,9 @@ public class SessionController {
 	
 	@Autowired
 	TokenGenerateService tokenGenerateService;
+	
+	@Autowired
+	AccountDao accountDao;
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(UserBean user) {
@@ -67,9 +76,15 @@ public class SessionController {
 				
 		if(userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
 			String authToken = tokenGenerateService.generateTokan(16);
-			userBean.setAuthenticationToken(authToken);
+			userBean.setAuthenticationToken(authToken);			
 			userDao.save(userBean);
-			return ResponseEntity.ok().body(userBean);
+			
+			List<AccountBean> accountBean = accountDao.findByUser(userBean);
+			Map<String, Object> resMap = new HashMap<>();
+			resMap.put("Accounts", accountBean);
+			resMap.put("users", userBean);
+			
+			return ResponseEntity.ok().body(resMap);
 		}else {
 			ResponseBean<UserBean> res = new ResponseBean<>();
 			res.setData(userBean);
