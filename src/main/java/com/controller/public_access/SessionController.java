@@ -1,6 +1,5 @@
 package com.controller.public_access;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,8 +26,9 @@ import com.dao.RoleDao;
 import com.dao.UserDao;
 import com.service.TokenGenerateService;
 
-@RestController
 @RequestMapping("/public")
+@CrossOrigin
+@RestController
 public class SessionController {
 
 	@Autowired
@@ -34,34 +36,35 @@ public class SessionController {
 
 	@Autowired
 	RoleDao roleDao;
-	
+
 	@Autowired
 	TokenGenerateService tokenGenerateService;
-	
+
 	@Autowired
 	AccountDao accountDao;
 
 	@Autowired
 	BCryptPasswordEncoder bCrypt;
-	
+
 	@PostMapping("/signup")
-	public ResponseEntity<?> signup(UserBean user) {
+	public ResponseEntity<?> signup(@RequestBody UserBean user) {
 		UserBean userBean = userDao.findByEmail(user.getEmail());
-		if(userBean==null) {
+		System.out.println(user.getPassword());
+		if (userBean == null) {
 			String encPassword = bCrypt.encode(user.getPassword());
 			RoleBean role = roleDao.findByRoleName("user");
 			user.setRole(role);
-			user.setPassword(encPassword);       
+			user.setPassword(encPassword);
 			userDao.save(user);
-			return ResponseEntity.ok().body(user);			
-		}else {
-			return ResponseEntity.ok().body("Email Already Given");
+			return ResponseEntity.ok().body(user);
+		} else {
+			return ResponseEntity.badRequest().body("Email Already Given");
 		}
-		
+
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(LoginBean login) {
+	public ResponseEntity<?> login(@RequestBody LoginBean login) {
 //		UserBean userBean = userDao.findByEmailAndPassword(login.getEmail(), login.getPassword());
 //		if(userBean==null && userBean.getPassword().equals(login.getPassword())) {
 //			return ResponseEntity.ok().body("Invalid Email or Password....");
@@ -72,34 +75,37 @@ public class SessionController {
 //			response.setHeader("authToken", authToken);
 //			return ResponseEntity.ok().body(userBean); 
 //		}
-		
+
 		UserBean userBean = userDao.findByEmail(login.getEmail());
-				
-		if(userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
+		
+		System.out.println("Login");
+		if (userBean != null && bCrypt.matches(login.getPassword(), userBean.getPassword()) == true) {
+			System.out.println("Done");
 			String authToken = tokenGenerateService.generateTokan(16);
-			userBean.setAuthenticationToken(authToken);			
+			userBean.setAuthenticationToken(authToken);
 			userDao.save(userBean);
-			
+
 			List<AccountBean> accountBean = accountDao.findByUser(userBean);
 			Map<String, Object> resMap = new HashMap<>();
 			resMap.put("Accounts", accountBean);
 			resMap.put("users", userBean);
-			
+
 			return ResponseEntity.ok().body(resMap);
-		}else {
+		} else {
 			ResponseBean<UserBean> res = new ResponseBean<>();
 			res.setData(userBean);
 			res.setMsg("Invalid Email or Password....");
-			return ResponseEntity.ok().body(res);
+			return ResponseEntity.badRequest().body(res);
 		}
 	}
-	
+
 	@GetMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletRequest req){
+	public ResponseEntity<?> logout(HttpServletRequest req) {
 		String authToken = req.getHeader("authToken");
 		UserBean userBean = userDao.findByAuthenticationToken(authToken);
 		userBean.setAuthenticationToken("");
 		userDao.save(userBean);
 		return ResponseEntity.ok().body("Logout Successfully....");
 	}
+	
 }

@@ -31,12 +31,17 @@ public class AuthenticationTokenFilter implements Filter {
 		System.out.println("Incoming request:->" + url);
 
 		if (url.contains("/public/")) {
+			System.out.println("Public");
 			chain.doFilter(request, response);
+			
 		} else {
 //			Token Authentication
-
+			System.out.println("private");
 			String authToken = req.getHeader("authToken");
-
+			
+			System.out.println("By Url"+authToken);
+			
+//			String authToken = "NaYBOXH9LnsmlqBY";
 			System.out.println(authToken);
 
 			if (authToken == null || authToken.trim().length() != 16) {
