@@ -1,6 +1,7 @@
 package com.filter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,7 +31,18 @@ public class AuthenticationTokenFilter implements Filter {
 
 		System.out.println("Incoming request:->" + url);
 
-		if (url.contains("/public/")) {
+		System.out.println("---------------------------------------------"+req.getParameter("authToken"));
+		Enumeration<String> allHeaders = req.getHeaderNames();
+		System.out.println("***************");
+		while (allHeaders.hasMoreElements()) {
+			String hName = allHeaders.nextElement();
+			System.out.println(hName+" => "+req.getHeader(hName));
+		}
+		System.out.println("***************");
+		System.out.println("---------------------------------------------");
+		
+		
+		if (url.contains("/public/") || req.getMethod().toLowerCase().equals("options")) {
 			System.out.println("Public");
 			chain.doFilter(request, response);
 			
@@ -39,17 +51,19 @@ public class AuthenticationTokenFilter implements Filter {
 			System.out.println("private");
 			String authToken = req.getHeader("authToken");
 			
-			System.out.println("By Url"+authToken);
 			
-//			String authToken = "NaYBOXH9LnsmlqBY";
-			System.out.println(authToken);
+//			String authToken = "2jUODHp6dlm5fY27";
 
-			if (authToken == null || authToken.trim().length() != 16) {
+			System.out.println("By Url"+authToken);
+
+			if (  authToken == null || authToken.trim().length() != 16) {
+				System.err.println("sending 401");
 				HttpServletResponse res = (HttpServletResponse) response;
 				res.setContentType("application/json");
-				res.setStatus(401);
+				res.setStatus(200);
 				res.getWriter().write("{'msg':'Please Login before access service'}");
 			} else {
+				System.out.println("***********************TOKEN*******************");
 				UserBean user = null;
 				try {					
 					 user = userDao.findByAuthenticationToken(authToken);

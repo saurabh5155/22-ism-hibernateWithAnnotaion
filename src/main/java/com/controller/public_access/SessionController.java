@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import com.bean.UserBean;
 import com.dao.AccountDao;
 import com.dao.RoleDao;
 import com.dao.UserDao;
+import com.service.MailService;
 import com.service.TokenGenerateService;
 
 @RequestMapping("/public")
@@ -45,7 +47,10 @@ public class SessionController {
 
 	@Autowired
 	BCryptPasswordEncoder bCrypt;
-
+	
+	@Autowired
+	MailService mailService;
+	
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody UserBean user) {
 		UserBean userBean = userDao.findByEmail(user.getEmail());
@@ -108,4 +113,16 @@ public class SessionController {
 		return ResponseEntity.ok().body("Logout Successfully....");
 	}
 	
+//	@PostMapping("/emailSendOtp")
+//	public ResponseEntity<?> emailSendOtp(LoginBean loginBean){
+//		System.out.println(loginBean.getEmail());
+//		UserBean userBean = userDao.findByEmail(loginBean.getEmail());
+////		if(userBean!=null) {
+//			System.out.println(userBean);
+//			String sub = "Set Otp";
+//			String msg ="OTP : "+tokenGenerateService.generateTokan(6);
+//			mailService.send(loginBean.getEmail(), sub, msg);
+////		}
+//		return ResponseEntity.ok().body("Otp Sent");
+//	}
 }
